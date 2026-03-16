@@ -241,5 +241,7 @@ public class TerminalBuffer {
         screen[height - 1] = new Cell[width];
         cursorRow = height - 1;
     }
-
+    // Bonus
+    // Resizing would need dynamic structures instead of fixed ones.
+    // Wide characters would utilize width of 2, with cell next to it as width 0.
 }
