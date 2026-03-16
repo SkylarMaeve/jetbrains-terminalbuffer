@@ -107,6 +107,7 @@ public class TerminalBuffer {
             int startColumn = (row == cursorRow) ? cursorColumn : 0;
             for (int column = startColumn; column < width; column++) {
                 Cell original = screen[row][column];
+                if (!original.active) continue;
                 Cell copy = new Cell();
 
                 copy.character = original.character;
@@ -174,8 +175,7 @@ public class TerminalBuffer {
     public void clearScreen() {
         for (int row = 0; row < height; row++) {
             for (int column = 0; column < width; column++) {
-                Cell c = screen[row][column];
-                c.character = ' ';
+                screen[row][column] = new Cell();
             }
         }
         setCursorPosition(0, 0);
@@ -201,7 +201,7 @@ public class TerminalBuffer {
         if (row < 0 || row >= height) throw new IndexOutOfBoundsException();
         StringBuilder sb = new StringBuilder();
         for (Cell cell : screen[row]) {
-            sb.append(cell.character);
+            sb.appendCodePoint(cell.character);
         }
         return sb.toString().stripTrailing();
     }
@@ -210,7 +210,7 @@ public class TerminalBuffer {
         if (row < 0 || row >= scrollBack.size()) throw new IndexOutOfBoundsException();
         StringBuilder sb = new StringBuilder();
         for (Cell cell : scrollBack.get(row)) {
-            sb.append(cell.character);
+            sb.appendCodePoint(cell.character);
         }
         return sb.toString().stripTrailing();
     }
@@ -240,8 +240,8 @@ public class TerminalBuffer {
             cursorRow++;
             if (cursorRow >= height) {
                 pushToScrollback();
-                return;
             }
+            return;
         }
 
         Cell c = screen[cursorRow][cursorColumn];
@@ -251,8 +251,10 @@ public class TerminalBuffer {
         c.styleFlagBold = styleFlagBold;
         c.styleFlagItalic = styleFlagItalic;
         c.styleFlagUnderline = styleFlagUnderline;
+        c.active = true;
 
         cursorColumn++;
+        //Due to this, actual screen is N-1 lines, last one is empty ready to be written into
         if (cursorColumn >= width) {
             cursorColumn = 0;
             cursorRow++;
