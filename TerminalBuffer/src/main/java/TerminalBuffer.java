@@ -146,6 +146,54 @@ public class TerminalBuffer {
         scrollBack.clear();
     }
 
+    // Content Access
+    public Cell getCharacterFromScreen(int row, int column) {
+        if (row < 0 || column < 0 || row >= height || column >= width) throw new IndexOutOfBoundsException();
+        return screen[row][column]; // Returning whole cells, char + attributes
+    }
+
+    public Cell getCharacterFromScrollback(int row, int column) {
+        if (row < 0 || column < 0 || row >= height || column >= width) throw new IndexOutOfBoundsException();
+        return scrollBack.get(row)[column]; // Returning whole cells, char + attributes
+    }
+
+    public String getLineAsStringFromScreen(int row) {
+        if (row < 0 || row >= height) throw new IndexOutOfBoundsException();
+        StringBuilder sb = new StringBuilder();
+        for (Cell cell : screen[row]) {
+            sb.append(cell.character);
+        }
+        return sb.toString().stripTrailing();
+    }
+
+    public String getLineAsStringFromScrollback(int row) {
+        if (row < 0 || row >= height) throw new IndexOutOfBoundsException();
+        StringBuilder sb = new StringBuilder();
+        for (Cell cell : scrollBack.get(row)) {
+            sb.append(cell.character);
+        }
+        return sb.toString().stripTrailing();
+    }
+
+    public String getScreenAsString()
+    {
+        StringBuilder sb = new StringBuilder();
+        for (int row = 0; row < height; row++) {
+            sb.append(getLineAsStringFromScreen(row)).append("\n");
+        }
+        return sb.toString();
+    }
+
+    public String getEntireContentAsString()
+    {
+        StringBuilder sb = new StringBuilder();
+        for (int row = 0; row < height; row++) {
+            sb.append(getLineAsStringFromScrollback(row)).append("\n");
+        }
+        sb.append(getScreenAsString());
+        return sb.toString();
+    }
+
     // Providers
     private void writeCharacter(int character) {
         // EOL
@@ -188,9 +236,9 @@ public class TerminalBuffer {
         }
 
         for (int i = 1; i < height; i++) {
-            screen[i-1] = screen[i];
+            screen[i - 1] = screen[i];
         }
-        screen[height-1] = new Cell[width];
+        screen[height - 1] = new Cell[width];
         cursorRow = height - 1;
     }
 

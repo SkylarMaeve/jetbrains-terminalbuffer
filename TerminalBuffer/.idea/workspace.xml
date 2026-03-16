@@ -4,9 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="9caa3645-ec36-48b9-895a-7a2d98912309" name="Changes" comment="feature: add Cursor logic to TerminalBuffer">
+    <list default="true" id="9caa3645-ec36-48b9-895a-7a2d98912309" name="Changes" comment="feature: add Editing logic to TerminalBuffer">
       <change afterPath="$PROJECT_DIR$/src/main/java/Main.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/TerminalBuffer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/TerminalBuffer.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -81,7 +80,7 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1773646226589</updated>
-      <workItem from="1773646230756" duration="5854000" />
+      <workItem from="1773646230756" duration="6613000" />
     </task>
     <task id="LOCAL-00001" summary="setup: Fixing IDE setup issues">
       <option name="closed" value="true" />
@@ -131,7 +130,15 @@
       <option name="project" value="LOCAL" />
       <updated>1773665455425</updated>
     </task>
-    <option name="localTasksCounter" value="7" />
+    <task id="LOCAL-00007" summary="feature: add Editing logic to TerminalBuffer">
+      <option name="closed" value="true" />
+      <created>1773674554441</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1773674554441</updated>
+    </task>
+    <option name="localTasksCounter" value="8" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -155,6 +162,7 @@
     <MESSAGE value="refactor: project structure change after deleting redundant classes" />
     <MESSAGE value="feature: add Attributes logic to TerminalBuffer" />
     <MESSAGE value="feature: add Cursor logic to TerminalBuffer" />
-    <option name="LAST_COMMIT_MESSAGE" value="feature: add Cursor logic to TerminalBuffer" />
+    <MESSAGE value="feature: add Editing logic to TerminalBuffer" />
+    <option name="LAST_COMMIT_MESSAGE" value="feature: add Editing logic to TerminalBuffer" />
   </component>
 </project>
