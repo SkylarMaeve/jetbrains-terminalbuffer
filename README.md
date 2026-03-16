@@ -1,2 +1,2 @@
 # jetbrains-terminalbuffer
-TerminalBuffer Implementation for JetBrains Intenrship Application
+TerminalBuffer Implementation for JetBrains Internship Application
