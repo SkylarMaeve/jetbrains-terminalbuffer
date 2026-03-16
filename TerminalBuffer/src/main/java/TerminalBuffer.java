@@ -24,6 +24,15 @@ public class TerminalBuffer {
         this.width = width;
         this.height = height;
         this.maxScrollback = maxScrollback;
+
+
+        this.screen = new Cell[height][width];
+        for (int row = 0; row < height; row++) {
+            for (int column = 0; column < width; column++) {
+                screen[row][column] = new Cell();
+            }
+        }
+        this.scrollBack = new LinkedList<>();
     }
 
     // Attributes
@@ -34,8 +43,6 @@ public class TerminalBuffer {
         this.styleFlagItalic = italic;
         this.styleFlagUnderline = underline;
 
-        this.screen = new Cell[height][width];
-        this.scrollBack = new LinkedList<>();
     }
 
     public void setForegroundColor(TerminalColor foregroundColor) {
@@ -94,32 +101,65 @@ public class TerminalBuffer {
     }
 
     public void insertText(String text) {
+
         List<Cell> tailingCells = new ArrayList<>();
         for (int row = cursorRow; row < height; row++) {
             int startColumn = (row == cursorRow) ? cursorColumn : 0;
             for (int column = startColumn; column < width; column++) {
-                tailingCells.add(screen[row][column]);
+                Cell original = screen[row][column];
+                Cell copy = new Cell();
+
+                copy.character = original.character;
+                copy.foregroundColor = original.foregroundColor;
+                copy.backgroundColor = original.backgroundColor;
+                copy.styleFlagBold = original.styleFlagBold;
+                copy.styleFlagItalic = original.styleFlagItalic;
+                copy.styleFlagUnderline = original.styleFlagUnderline;
+
+                tailingCells.add(copy);
+
             }
         }
 
+        int tempScrollbackSize = scrollBack.size();
         text.chars().forEach(this::writeCharacter);
 
-        int endRow = cursorRow;
-        int endColumn = cursorColumn;
+        int targetRow = cursorRow;
+        int targetColumn = cursorColumn;
 
-        tailingCells.forEach(cell -> writeCharacter(cell.character));
+        // Saving current attributes before putting cells back
+        TerminalColor tempFg = foregroundColor;
+        TerminalColor tempBg = backgroundColor;
+        boolean tempStyleFlagBold = styleFlagBold;
+        boolean tempStyleFlagItalic = styleFlagItalic;
+        boolean tempStyleFlagUnderline = styleFlagUnderline;
+        for (Cell cell : tailingCells) {
+            this.foregroundColor = cell.foregroundColor;
+            this.backgroundColor = cell.backgroundColor;
+            this.styleFlagBold = cell.styleFlagBold;
+            this.styleFlagItalic = cell.styleFlagItalic;
+            this.styleFlagUnderline = cell.styleFlagUnderline;
+            writeCharacter(cell.character);
+        }
 
-        setCursorPosition(endRow, endColumn);
+        this.foregroundColor = tempFg;
+        this.backgroundColor = tempBg;
+        this.styleFlagBold = tempStyleFlagBold;
+        this.styleFlagItalic = tempStyleFlagItalic;
+        this.styleFlagUnderline = tempStyleFlagUnderline;
+
+        // Setting cursor
+        int scrolls = scrollBack.size() - tempScrollbackSize;
+        int finalRow = Math.max(0, targetRow - scrolls);
+        setCursorPosition(targetColumn, finalRow);
     }
 
     public void fillLine(char character) {
-        for (int column = 0; column < height; column++) {
-            Cell c = screen[cursorRow][cursorColumn];
+        for (int column = 0; column < width; column++) {
+            Cell c = screen[cursorRow][column];
             c.character = character;
-
             c.foregroundColor = foregroundColor;
             c.backgroundColor = backgroundColor;
-
             c.styleFlagBold = styleFlagBold;
             c.styleFlagItalic = styleFlagItalic;
             c.styleFlagUnderline = styleFlagUnderline;
@@ -132,8 +172,8 @@ public class TerminalBuffer {
     }
 
     public void clearScreen() {
-        for (int row = cursorRow; row < height; row++) {
-            for (int column = cursorColumn; column < width; column++) {
+        for (int row = 0; row < height; row++) {
+            for (int column = 0; column < width; column++) {
                 Cell c = screen[row][column];
                 c.character = ' ';
             }
@@ -153,7 +193,7 @@ public class TerminalBuffer {
     }
 
     public Cell getCharacterFromScrollback(int row, int column) {
-        if (row < 0 || column < 0 || row >= height || column >= width) throw new IndexOutOfBoundsException();
+        if (row < 0 || column < 0 || row >= scrollBack.size() || column >= width) throw new IndexOutOfBoundsException();
         return scrollBack.get(row)[column]; // Returning whole cells, char + attributes
     }
 
@@ -167,7 +207,7 @@ public class TerminalBuffer {
     }
 
     public String getLineAsStringFromScrollback(int row) {
-        if (row < 0 || row >= height) throw new IndexOutOfBoundsException();
+        if (row < 0 || row >= scrollBack.size()) throw new IndexOutOfBoundsException();
         StringBuilder sb = new StringBuilder();
         for (Cell cell : scrollBack.get(row)) {
             sb.append(cell.character);
@@ -175,8 +215,7 @@ public class TerminalBuffer {
         return sb.toString().stripTrailing();
     }
 
-    public String getScreenAsString()
-    {
+    public String getScreenAsString() {
         StringBuilder sb = new StringBuilder();
         for (int row = 0; row < height; row++) {
             sb.append(getLineAsStringFromScreen(row)).append("\n");
@@ -184,10 +223,9 @@ public class TerminalBuffer {
         return sb.toString();
     }
 
-    public String getEntireContentAsString()
-    {
+    public String getEntireContentAsString() {
         StringBuilder sb = new StringBuilder();
-        for (int row = 0; row < height; row++) {
+        for (int row = 0; row < scrollBack.size(); row++) {
             sb.append(getLineAsStringFromScrollback(row)).append("\n");
         }
         sb.append(getScreenAsString());
@@ -208,10 +246,8 @@ public class TerminalBuffer {
 
         Cell c = screen[cursorRow][cursorColumn];
         c.character = character;
-
         c.foregroundColor = foregroundColor;
         c.backgroundColor = backgroundColor;
-
         c.styleFlagBold = styleFlagBold;
         c.styleFlagItalic = styleFlagItalic;
         c.styleFlagUnderline = styleFlagUnderline;
@@ -238,7 +274,12 @@ public class TerminalBuffer {
         for (int i = 1; i < height; i++) {
             screen[i - 1] = screen[i];
         }
+
         screen[height - 1] = new Cell[width];
+        for (int i = 0; i < width; i++) {
+            screen[height - 1][i] = new Cell();
+        }
+
         cursorRow = height - 1;
     }
     // Bonus
