@@ -2,14 +2,14 @@ import java.util.LinkedList;
 
 public class TerminalBuffer {
     // Cursor
-    private int cursorPositionX = 0;
-    private int cursorPositionY = 0;
-    // Attributes basics
+    private int cursorColumn = 0;
+    private int cursorRow = 0;
+    // Setup
     private int width;
     private int height;
     private int maxScrollback;
     private TerminalColor foregroundColor = TerminalColor.DEFAULT;
-    private TerminalColor backgroundColor =  TerminalColor.DEFAULT;
+    private TerminalColor backgroundColor = TerminalColor.DEFAULT;
     // Style flags
     private boolean styleFlagBold = false;
     private boolean styleFlagItalic = false;
@@ -24,5 +24,33 @@ public class TerminalBuffer {
         this.maxScrollback = maxScrollback;
     }
 
+    // Attributes
+    public void setAllAttributes(TerminalColor bg, TerminalColor fg, boolean bold, boolean italic, boolean underline) {
+        this.foregroundColor = fg;
+        this.backgroundColor = bg;
+        this.styleFlagBold = bold;
+        this.styleFlagItalic = italic;
+        this.styleFlagUnderline = underline;
+    }
+
+    public void setForegroundColor(TerminalColor foregroundColor) {
+        this.foregroundColor = foregroundColor;
+    }
+
+    public void setBackgroundColor(TerminalColor backgroundColor) {
+        this.backgroundColor = backgroundColor;
+    }
+
+    public void setStyleFlagBold(boolean styleFlagBold) {
+        this.styleFlagBold = styleFlagBold;
+    }
+
+    public void setStyleFlagUnderline(boolean styleFlagUnderline) {
+        this.styleFlagUnderline = styleFlagUnderline;
+    }
+
+    public void setStyleFlagItalic(boolean styleFlagItalic) {
+        this.styleFlagItalic = styleFlagItalic;
+    }
 
 }
