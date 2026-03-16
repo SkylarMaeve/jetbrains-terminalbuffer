@@ -53,4 +53,34 @@ public class TerminalBuffer {
         this.styleFlagItalic = styleFlagItalic;
     }
 
+    // Cursor
+    public int getCursorColumn() {
+        return cursorColumn;
+    }
+
+    public int getCursorRow() {
+        return cursorRow;
+    }
+
+    public void setCursorPosition(int column, int row) {
+        cursorColumn = Math.max(0, Math.min(column, width - 1));
+        cursorRow = Math.max(0, Math.min(row, height - 1));
+    }
+
+    public void moveCursorRight(int numberOfColumns) {
+        setCursorPosition(cursorColumn + numberOfColumns, cursorRow);
+    }
+
+    public void moveCursorLeft(int numberOfColumns) {
+        setCursorPosition(cursorColumn - numberOfColumns, cursorRow);
+    }
+
+    public void moveCursorUp(int numberOfColumns) {
+        setCursorPosition(cursorColumn, cursorRow - numberOfColumns);
+    }
+
+    public void moveCursorDown(int numberOfColumns) {
+        setCursorPosition(cursorColumn, cursorRow + numberOfColumns);
+    }
+
 }
